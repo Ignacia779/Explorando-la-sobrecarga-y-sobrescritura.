@@ -6,21 +6,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class EntregaDAO {
-    // Insertar una entrega
-    public void insertarEntrega(int pedidoId, int repartidorId, String fecha) {
+    public int insertarEntrega(int pedidoId, int repartidorId, String fecha) {
         String sql = "INSERT INTO entrega (pedido_id, repartidor_id, fecha) VALUES (?, ?, ?)";
+        int idGenerado = -1;
+
         try (Connection conn = ConexionDB.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, pedidoId);
             stmt.setInt(2, repartidorId);
             stmt.setString(3, fecha);
             stmt.executeUpdate();
 
-            System.out.println("✅ Entrega registrada correctamente!");
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    idGenerado = rs.getInt(1);
+                }
+            }
+
+            System.out.println("✅ Entrega registrada correctamente con ID: " + idGenerado);
         } catch (SQLException e) {
             System.out.println("❌ Error al registrar entrega: " + e.getMessage());
         }
+        return idGenerado;
     }
 
     public void listarEntregas() {

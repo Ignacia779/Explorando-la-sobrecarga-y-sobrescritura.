@@ -3,19 +3,27 @@ package app;
 import dao.PedidoDAO;
 import dao.RepartidorDAO;
 import dao.EntregaDAO;
-
 public class MainApp {
     public static void main(String[] args) {
         PedidoDAO pedidoDAO = new PedidoDAO();
-        pedidoDAO.insertarPedido("Av. HighMark 17", "COMIDA", "PENDIENTE");
-        pedidoDAO.listarPedidos();
-
         RepartidorDAO repartidorDAO = new RepartidorDAO();
-        repartidorDAO.insertarRepartidor("Vince Lombardi", "987654321");
+        EntregaDAO entregaDAO = new EntregaDAO();
+
+        int pedidoId = pedidoDAO.insertarPedido("Av. HighMark 17", "COMIDA", "PENDIENTE");
+        System.out.println("✅ Pedido insertado con ID: " + pedidoId);
+
+        int repartidorId = repartidorDAO.insertarRepartidor("Vince Lombardi", "987654321");
+        System.out.println("✅ Repartidor insertado con ID: " + repartidorId);
+
+        int entregaId = entregaDAO.insertarEntrega(pedidoId, repartidorId, "2026-10-04");
+        System.out.println("✅ Entrega registrada con ID: " + entregaId);
+
+        System.out.println("📋 Repartidores actuales:");
         repartidorDAO.listarRepartidores();
 
-        EntregaDAO entregaDAO = new EntregaDAO();
-        entregaDAO.insertarEntrega(1, 1, "2026-09-28");
-        entregaDAO.listarEntregas();
+        repartidorDAO.eliminarRepartidor(repartidorId);
+
+        System.out.println("📋 Repartidores después de eliminar:");
+        repartidorDAO.listarRepartidores();
     }
 }
